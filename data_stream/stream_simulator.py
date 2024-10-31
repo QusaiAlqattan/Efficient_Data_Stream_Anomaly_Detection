@@ -1,8 +1,11 @@
 import numpy as np
 import random
 
-def generate_data_stream(n_points=1000):
+def generate_data_stream(n_points=500):
     """Simulates a data stream with seasonality, noise, and occasional anomalies."""
+    if not isinstance(n_points, int) or n_points <= 0:
+        raise ValueError("n_points must be a positive integer.")
+    
     data = []
     for i in range(n_points):
         # Seasonal component

@@ -9,7 +9,7 @@ if __name__ == "__main__":
     stream = generate_data_stream()
     
     # Initialize the anomaly detector
-    detector = ZScoreAnomalyDetector(window_size=30, threshold=3)
+    detector = ZScoreAnomalyDetector(window_size=30, threshold=4)
     
     # Set up real-time plotting
     plt.figure()

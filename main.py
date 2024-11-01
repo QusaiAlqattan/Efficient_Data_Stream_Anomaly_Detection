@@ -15,7 +15,7 @@ if __name__ == "__main__":
         log_error(f"Error generating data stream: {e}")
     
     # Initialize the anomaly detector
-    detector = ZScoreAnomalyDetector(window_size=30, threshold=4)
+    detector = ZScoreAnomalyDetector(window_size=30, threshold=3.3)
     
     # Set up real-time plotting
     plt.figure()

@@ -25,6 +25,8 @@ class ZScoreAnomalyDetector:
         
         z_scores = zscore(list(self.data_window))
         if abs(z_scores[-1]) > self.threshold:
+            # remove the anomaly from the window, to prevint sudden shifts
+            self.data_window.pop()
             return True
         
         return False

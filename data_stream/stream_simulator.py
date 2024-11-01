@@ -2,51 +2,67 @@ import numpy as np
 import random
 
 def generate_data_stream(n_points=300):
-    """Simulates a data stream with seasonality, noise, and different types of anomalies."""
+    """
+    Generates a simulated data stream with seasonality, noise, and different types
+    of anomalies (global, contextual, and collective).
+
+    Parameters:
+    -----------
+    n_points : int, optional (default=300)
+        Number of data points to generate in the simulated data stream.
+
+    Returns:
+    --------
+    data : list of floats
+        A list of generated data points, where each point may include seasonal patterns,
+        noise, and occasional anomalies.
+    """
+
     if not isinstance(n_points, int) or n_points <= 0:
         raise ValueError("n_points must be a positive integer.")
     
     data = []
+    
     for i in range(n_points):
-        # Seasonal component
+        # Seasonal component: sine wave to seasonality
         seasonal = 10 * np.sin(i / 50) + 50
         
-        # Noise component
+        # Noise component: small random fluctuation around each seasonal point
         noise = np.random.normal(0, 2)
         
-        # Initialize anomaly to 0 (no anomaly by default)
+        # No anomaly by default
         anomaly = 0
         
-        # Define anomaly probabilities for different types
-        global_outlier_prob = 0.01  # Global outlier probability
-        contextual_outlier_prob = 0.02  # Contextual outlier probability
+        global_outlier_prob = 0.01  # Probability of a global outlier
+        contextual_outlier_prob = 0.02  # Probability of a contextual outlier
         collective_outlier_prob = 0.005  # Probability of starting a collective anomaly
 
-        # Global Outliers: large, rare anomalies
+        # Generate Global Outliers
         if random.random() < global_outlier_prob:
-            anomaly = random.choice([80, -50])  # Very high or very low outliers
+            anomaly = random.choice([80, -50])
         
-        # Contextual Outliers: anomalies based on context (e.g., unusually high or low for the season)
+        # Generate Contextual Outliers
         elif random.random() < contextual_outlier_prob:
-            if seasonal > 50:  # During high seasonality, add a negative contextual anomaly
+            # If seasonal component is high, add a negative contextual anomaly; if low, add positive
+            if seasonal > 50:
                 anomaly = -20
-            else:  # During low seasonality, add a positive contextual anomaly
+            else:
                 anomaly = 20
 
-        # Collective Outliers: consecutive anomalies
+        # Generate Collective Outliers
         elif random.random() < collective_outlier_prob:
-            # Start a series of 5-10 anomalous points
+            # Start a series of 5-10 consecutive anomalies with moderate values
             anomaly = [random.choice([15, -15]) for _ in range(random.randint(5, 10))]
         
-        # If we generated a series of anomalies (collective), add them to data
+        # Handle collective anomalies as a sequence of consecutive points
         if isinstance(anomaly, list):
-            # Add collective anomalies as consecutive points in the data
+            # Add each anomaly in the sequence to the data stream with seasonal and noise components
             data.extend([seasonal + noise + a for a in anomaly])
-            # Skip the next points since they are already populated
-            i += len(anomaly) - 1  # Move the loop index forward to skip over the collective anomaly
+            # Adjust loop counter to skip over the added sequence points in the next iterations
+            i += len(anomaly) - 1
         else:
-            # Single-point anomaly (either global or contextual)
+            # Add single-point anomaly (global or contextual) to the data stream
             data.append(seasonal + noise + anomaly)
     
-    # Ensure we don't exceed n_points if collective anomalies push us over
+    # Ensure the final data stream length does not exceed n_points in case of collective anomalies
     return data[:n_points]
